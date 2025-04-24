@@ -1,9 +1,10 @@
-import { app, BrowserWindow, shell, ipcMain } from 'electron'
+import { app, BrowserWindow, shell, ipcMain, screen } from 'electron'
 import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import os from 'node:os'
 import { update } from './update'
+import StoreManager from './store'
 
 const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -43,10 +44,18 @@ let win: BrowserWindow | null = null
 const preload = path.join(__dirname, '../preload/index.mjs')
 const indexHtml = path.join(RENDERER_DIST, 'index.html')
 
+const MAIN_WINDOWS_WIDTH = 800;
+const MAIN_WINDOWS_HEIGHT = 600;
+
 async function createWindow() {
   win = new BrowserWindow({
     title: 'Main window',
     icon: path.join(process.env.VITE_PUBLIC, 'favicon.ico'),
+    width: MAIN_WINDOWS_WIDTH,
+    height: MAIN_WINDOWS_HEIGHT,
+    frame: false,
+    autoHideMenuBar: true,
+    transparent: true,
     webPreferences: {
       preload,
       // Warning: Enable nodeIntegration and disable contextIsolation is not secure in production
@@ -57,6 +66,9 @@ async function createWindow() {
       // contextIsolation: false,
     },
   })
+
+  win.setAlwaysOnTop(true, "screen-saver")
+  win.setVisibleOnAllWorkspaces(true)
 
   if (VITE_DEV_SERVER_URL) { // #298
     win.loadURL(VITE_DEV_SERVER_URL)
@@ -97,11 +109,18 @@ app.on('second-instance', () => {
 })
 
 app.on('activate', () => {
+
   const allWindows = BrowserWindow.getAllWindows()
   if (allWindows.length) {
     allWindows[0].focus()
   } else {
     createWindow()
+  }
+})
+
+ipcMain.on('close-app', () => {
+  if (win) {
+    win.close()
   }
 })
 

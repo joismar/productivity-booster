@@ -1,6 +1,44 @@
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
   text-align: center;
+}
+
+body {
+  margin: 0;
+}
+
+button {
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+}
+
+.grab-area {
+  -webkit-app-region: drag;
+}
+
+.no-grab-area {
+  -webkit-app-region: no-drag;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #2d3748; /* Dark gray background */
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4a5568; /* Medium gray thumb */
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #718096; /* Lighter gray on hover */
 }
