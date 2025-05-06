@@ -47,6 +47,8 @@ const indexHtml = path.join(RENDERER_DIST, 'index.html')
 const MAIN_WINDOWS_WIDTH = 800;
 const MAIN_WINDOWS_HEIGHT = 600;
 
+const store = new StoreManager('store.json')
+
 async function createWindow() {
   win = new BrowserWindow({
     title: 'Main window',
@@ -73,14 +75,15 @@ async function createWindow() {
   if (VITE_DEV_SERVER_URL) { // #298
     win.loadURL(VITE_DEV_SERVER_URL)
     // Open devTool if the app is not packaged
-    win.webContents.openDevTools()
+    // win.webContents.openDevTools()
   } else {
     win.loadFile(indexHtml)
   }
 
   // Test actively push message to the Electron-Renderer
   win.webContents.on('did-finish-load', () => {
-    win?.webContents.send('main-process-message', new Date().toLocaleString())
+    const data = store.get('tasks')
+    win?.webContents.send('tasks-data', data)
   })
 
   // Make all links open with the browser, not with the application
@@ -109,13 +112,16 @@ app.on('second-instance', () => {
 })
 
 app.on('activate', () => {
-
   const allWindows = BrowserWindow.getAllWindows()
   if (allWindows.length) {
     allWindows[0].focus()
   } else {
     createWindow()
   }
+})
+
+ipcMain.on('set-tasks-data', (event, data) => {
+  store.set('tasks', data)
 })
 
 ipcMain.on('close-app', () => {

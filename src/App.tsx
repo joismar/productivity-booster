@@ -16,12 +16,18 @@ function App() {
   const [taskTime, setTaskTime] = React.useState(60);
 
   React.useEffect(() => {
-    // const storedTasks = store.get('tasks') || [];
-    // setTasks(storedTasks);
+    window.ipcRenderer.on('tasks-data', (_event, ...args) => {
+      const storedTasks = args[0] as Task[];
+      setTasks(storedTasks);
+    })
   }, []);
 
+  React.useEffect(() => {
+    window.ipcRenderer.send('set-tasks-data', tasks);
+  }, [tasks]);
+
   function handleClose() {
-    // store.set('tasks', tasks);
+    window.ipcRenderer.send('set-tasks-data', tasks);
     window.ipcRenderer.send('close-app');
   }
 

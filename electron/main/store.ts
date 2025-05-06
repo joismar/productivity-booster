@@ -5,12 +5,21 @@ import * as path from 'path';
 class StoreManager {
     private storePath: string;
 
-    constructor(fileName: string) {
+    constructor(
+        fileName: string, 
+        defaultData: object = {
+            tasks: [],
+        }
+    ) {
         const userDataPath = electron.app.getPath('documents');
-        this.storePath = path.join(userDataPath, fileName);
+        this.storePath = path.join(userDataPath, 'PBData', fileName);
 
         if (!fs.existsSync(this.storePath)) {
-            fs.writeFileSync(this.storePath, JSON.stringify({}));
+            const dirPath = path.dirname(this.storePath);
+            if (!fs.existsSync(dirPath)) {
+                fs.mkdirSync(dirPath, { recursive: true });
+            }
+            fs.writeFileSync(this.storePath, JSON.stringify(defaultData));
         }
     }
 
