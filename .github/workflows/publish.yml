@@ -28,8 +28,7 @@ jobs:
           npm install
           npm run build
 
-      - name: Publish releases
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          npm exec electron-builder -- --publish always --win
+      - name: Release Electron app
+        uses: samuelmeuli/action-electron-builder@v1
+        with:
+          github_token: ${{ secrets.github_token }}
